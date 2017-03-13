@@ -1,0 +1,43 @@
+* Seqfilter
+Seqfilter is a small tool written in C on top of the excellent
+[[https://github.com/attractivechaos/klib][klib]] library by Heng Li. It allows filtering of fasta and fastq files
+based on sequence IDs and sequence length. The fasta and fastq input
+files may be gzipped.
+
+* Get it!
+#+BEGIN_SRC bash
+./git clone --recursive https://github.com/clwgg/seqfilter
+
+cd seqfilter
+make
+#+END_SRC
+
+* Usage
+Seqfilter will *always* try to filter by IDs, since thats its intended purpose.
+You *can* however omit the ID file. In that case, you *have* to specify the '-n' flag
+for negative filtering if you want to produce output, to allow output
+of sequences without a "valid" ID.
+
+Negative filtering ('-n') means that all sequences *without* ID
+matches are kept (subsequently, if no ID file is supplied, all
+sequences are without ID matches).
+
+#+BEGIN_SRC bash
+# filter by ID file
+seqfilter -i in.fq -l ids.txt -o out.fq
+
+#filter by ID file and min length 30
+seqfilter -m 30 -i in.fq -l ids.txt -o out.fq
+
+#filter only by min length 30
+seqfilter -n -m 30 -i in.fq -o out.fq
+
+#keep only sequence called "mt"
+seqfilter -i in.fa -l <(printf "mt\n") -o mt.fa
+
+#remove sequence called "mt" from input
+seqfilter -n -i in.fa -l <(printf "mt\n") -o in_no-mt.fa
+
+#+END_SRC
+
+
