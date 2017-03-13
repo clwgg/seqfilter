@@ -6,7 +6,7 @@ files may be gzipped.
 
 * Get it!
 #+BEGIN_SRC bash
-./git clone --recursive https://github.com/clwgg/seqfilter
+git clone --recursive https://github.com/clwgg/seqfilter
 
 cd seqfilter
 make
