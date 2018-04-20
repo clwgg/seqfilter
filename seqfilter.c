@@ -161,11 +161,19 @@ int main(int argc, char *argv[])
 // WARNING: works on pointers to variables in main()
 void make_output(kseq_t *seq, int *l, int *n, long *nseq, int *minseq, int *maxseq, FILE *pass)
 {
-  if(seq->qual.s) {
-    fprintf(pass, "@%s\n%s\n+\n%s\n", seq->name.s, seq->seq.s, seq->qual.s);
+  if (seq->qual.s) {
+    if (seq->comment.s) {
+      fprintf(pass, "@%s %s\n%s\n+\n%s\n", seq->name.s, seq->comment.s, seq->seq.s, seq->qual.s);
+    } else {
+      fprintf(pass, "@%s\n%s\n+\n%s\n", seq->name.s, seq->seq.s, seq->qual.s);
+    }
   }
   else {
-    fprintf(pass, ">%s\n%s\n", seq->name.s, seq->seq.s);
+    if (seq->comment.s) {
+      fprintf(pass, ">%s %s\n%s\n", seq->name.s, seq->comment.s, seq->seq.s);
+    } else {
+      fprintf(pass, ">%s\n%s\n", seq->name.s, seq->seq.s);
+    }
   }
   *n = *n + 1;
   *nseq = *nseq + *l;
