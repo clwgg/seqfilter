@@ -28,7 +28,7 @@ void make_output(kseq_t *seq, int *l, int *n, long *nseq, int *minseq, int *maxs
 int main(int argc, char *argv[])
 {
 
-  int c; 
+  int c;
   int max = 0;
   int min = 0;
   char *in = 0;
@@ -95,7 +95,7 @@ int main(int argc, char *argv[])
   // open output file
   FILE *pass;
   pass = fopen(out,"w+");
-  
+
   // open sequence file
   gzFile fp;
   fp = gzopen(in, "r");
@@ -116,7 +116,7 @@ int main(int argc, char *argv[])
   // loop through input sequence file, apply filters and produce output
   while ((l = kseq_read(seq)) >= 0) {
     check.key = seq->name.s, check.count = 1;
-   
+
     p = kb_getp(str, b, &check);
 
     if (min && l < min) {
@@ -148,7 +148,7 @@ int main(int argc, char *argv[])
   // iterate through kbtree and free all keys
   kbitr_t itr;
   kb_itr_first(str, b, &itr);
-  for (; kb_itr_valid(&itr); kb_itr_next(str, b, &itr)) { 
+  for (; kb_itr_valid(&itr); kb_itr_next(str, b, &itr)) {
     p = &kb_itr_key(elem_t, &itr);
     free(p->key);
   }
@@ -160,7 +160,7 @@ int main(int argc, char *argv[])
 // function to produce output
 // WARNING: works on pointers to variables in main()
 void make_output(kseq_t *seq, int *l, int *n, long *nseq, int *minseq, int *maxseq, FILE *pass)
-{ 
+{
   if(seq->qual.s) {
     fprintf(pass, "@%s\n%s\n+\n%s\n", seq->name.s, seq->seq.s, seq->qual.s);
   }
@@ -186,4 +186,3 @@ void make_output(kseq_t *seq, int *l, int *n, long *nseq, int *minseq, int *maxs
     *maxseq = *l;
   }
 }
-
