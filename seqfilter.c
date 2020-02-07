@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
   char *out = 0;
   char *id = 0;
   bool flag = false;
-  while ((c = getopt(argc, argv, "i:o:l:x:m:n")) >= 0) {
+  while ((c = getopt(argc, argv, "i:o:l:x:m:nh")) >= 0) {
     switch (c) {
             case 'i': in = optarg; break;
             case 'o': out = optarg; break;
@@ -43,10 +43,10 @@ int main(int argc, char *argv[])
             case 'x': max = atoi(optarg); break;
             case 'm': min = atoi(optarg); break;
             case 'n': flag = true; break;
+            case 'h' : in = 0;
     }
   }
-
-  if (!in || !out) {
+  if (!in) {
     fprintf(stderr, "Usage: %s -i <in.fa/q> -l <ID.list> -o <out.fa/q>\n\n", argv[0]);
     fprintf(stderr, "Options:\n");
     fprintf(stderr, "        -i   Input file (fasta/fastq)\n");
@@ -58,10 +58,12 @@ int main(int argc, char *argv[])
     return 1;
   }
 
+
   // Initialize kbtree
   kbtree_t(str) *b;
   elem_t *p, t;
   b = kb_init(str, KB_DEFAULT_SIZE);
+  kbitr_t itr;
 
   // Initialize string stream
   kstream_t *ks;
@@ -94,11 +96,27 @@ int main(int argc, char *argv[])
 
   // open output file
   FILE *pass;
-  pass = fopen(out,"w+");
+  if (!out) {
+    pass = stdout;
+  }
+  else {
+    pass = fopen(out,"w+");
+  }
+  if (!pass) {
+      fprintf(stderr, "Could not open output file: %s\n", out);
+    goto endkbtree;
+  }
 
   // open sequence file
   gzFile fp;
+  if (!strcmp(in, "-")) {
+      in = "/dev/stdin";
+  }
   fp = gzopen(in, "r");
+  if (!fp) {
+      fprintf(stderr, "Could not open input file: %s\n", in);
+      goto endkbtree;
+    }
 
   // initialize sequence variables and btree elements for checking existence of IDs
   elem_t check;
@@ -145,15 +163,16 @@ int main(int argc, char *argv[])
   kseq_destroy(seq);
   gzclose(fp);
 
-  // iterate through kbtree and free all keys
-  kbitr_t itr;
-  kb_itr_first(str, b, &itr);
-  for (; kb_itr_valid(&itr); kb_itr_next(str, b, &itr)) {
-    p = &kb_itr_key(elem_t, &itr);
-    free(p->key);
-  }
-  kb_destroy(str, b);
-  return 0;
+  endkbtree:
+    // iterate through kbtree and free all keys
+    //kbitr_t itr;
+    kb_itr_first(str, b, &itr);
+    for (; kb_itr_valid(&itr); kb_itr_next(str, b, &itr)) {
+        p = &kb_itr_key(elem_t, &itr);
+        free(p->key);
+    }
+    kb_destroy(str, b);
+    return 0;
 
 }
 
