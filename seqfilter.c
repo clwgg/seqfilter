@@ -103,20 +103,20 @@ int main(int argc, char *argv[])
     pass = fopen(out,"w+");
   }
   if (!pass) {
-      fprintf(stderr, "Could not open output file: %s\n", out);
+    fprintf(stderr, "Could not open output file: %s\n", out);
     goto endkbtree;
   }
 
   // open sequence file
   gzFile fp;
   if (!strcmp(in, "-")) {
-      in = "/dev/stdin";
+    in = "/dev/stdin";
   }
   fp = gzopen(in, "r");
   if (!fp) {
-      fprintf(stderr, "Could not open input file: %s\n", in);
-      goto endkbtree;
-    }
+    fprintf(stderr, "Could not open input file: %s\n", in);
+    goto endkbtree;
+  }
 
   // initialize sequence variables and btree elements for checking existence of IDs
   elem_t check;
